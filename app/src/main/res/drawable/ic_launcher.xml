@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Self-contained launcher icon (vector) so no PNG/mipmap assets are needed.
+     Vector launcher icons are supported on API 24+. A green tile with a white
+     open-book glyph — the BookNest brand. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Background tile -->
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M0,0h24v24h-24z" />
+
+    <!-- Open book -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,6.5C10.55,5.4 8.45,4.75 6.5,4.75C5.3,4.75 4.05,5 3,5.5L3,17.6C4.05,17.1 5.3,16.85 6.5,16.85C8.45,16.85 10.55,17.5 12,18.6C13.45,17.5 15.55,16.85 17.5,16.85C18.7,16.85 19.95,17.1 21,17.6L21,5.5C19.95,5 18.7,4.75 17.5,4.75C15.55,4.75 13.45,5.4 12,6.5ZM12,8.1C13.2,7.3 14.85,6.85 16.5,6.85C16.84,6.85 17.17,6.87 17.5,6.9L17.5,15C17.17,14.97 16.84,14.95 16.5,14.95C14.85,14.95 13.2,15.4 12,16.2L12,8.1Z" />
+</vector>
