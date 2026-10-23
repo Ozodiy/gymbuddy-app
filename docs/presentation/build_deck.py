@@ -135,21 +135,6 @@ p = tf.add_paragraph(); p.space_before = Pt(10)
 run(p, "“Buddy” is the gym word for a training partner. People who train with a partner skip fewer sessions – "
        "so the name says what the app is for: staying consistent, together.", 18, INK)
 
-# 2b Where it can be used -------------------------------------------------
-s = slide("Where GymBuddy can be used", "The same app helps different groups")
-table(s, [
-    ["Who", "How GymBuddy helps"],
-    ["Individual gym-goers", "Keep a simple training history and see weekly progress"],
-    ["Friends and training groups", "Plan shared sessions and see who joined"],
-    ["Newcomers to a gym", "Find a partner instead of training alone"],
-    ["University sports clubs", "Organise open sessions for students and staff"],
-    ["Workplace wellness programmes", "Let colleagues arrange group workouts"],
-    ["Small gyms and fitness studios", "Give members a free way to meet training partners"],
-], Inches(0.7), Inches(1.8), Inches(11.9), [4.4, 7.5], 18, 0.62)
-tb = s.shapes.add_textbox(Inches(0.7), Inches(6.35), Inches(11.9), Inches(0.8))
-tb.text_frame.word_wrap = True
-run(tb.text_frame.paragraphs[0], "People who track their training see progress, and people who train with a partner skip fewer sessions.", 16, MUTED)
-
 # 3 Problem ---------------------------------------------------------------
 s = slide("The problem", "One sentence: who has what problem, and why it matters")
 b = box(s, Inches(0.7), Inches(1.8), Inches(11.9), Inches(1.5), ORANGE)
@@ -303,22 +288,6 @@ table(s, [
 bullets(s, ["Expected question: “Where do you check that a user only edits their own data?” → "
             "In Firebase Security Rules (Lab 2), not only in the app."],
         Inches(0.7), Inches(5.5), Inches(11.9), Inches(1.5), 18)
-
-# 12b Status --------------------------------------------------------------
-s = slide("Where we are now", "Lab 1 checklist: done and still to do")
-table(s, [
-    ["Done", "Still to do"],
-    ["Problem statement, MVP, data model and architecture in the README",
-     "Sprint board with 5 columns and issues in the right columns"],
-    ["Public repo, first push to main, PR template",
-     "Ruleset protecting main (PR required, no force push)"],
-    ["Labels and 6 issues with user story and acceptance criteria",
-     "Assignees on every Sprint 1 issue (teammates must accept their invitations)"],
-    ["Authentication code: repository, validator, ViewModel, screens, navigation",
-     "Firebase project, google-services.json, Email/Password sign-in, test on the emulator"],
-    ["PR #7 merged (project overview)",
-     "At least two merged PRs, each with a teammate review; Retro – Lab 1 issue"],
-], Inches(0.7), Inches(1.8), Inches(11.9), [5.95, 5.95], 15, 0.85)
 
 # 13 Next ----------------------------------------------------------------
 s = slide("What's next", "Lab 1 delivers the walking skeleton")
