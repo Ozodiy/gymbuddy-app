@@ -4,6 +4,9 @@
 
 GymBuddy lets you log workouts in the cloud, review your history, and find people to train with.
 
+**Name:** Gym + Buddy. "Buddy" is gym slang for a training partner.
+**Where it can be used:** individual gym-goers, friends and training groups, newcomers looking for a partner, university sports clubs, workplace wellness programmes and small gyms. More in [docs/planning/project-overview.md](docs/planning/project-overview.md).
+
 ## Team
 
 | Member | Role |
