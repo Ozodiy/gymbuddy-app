@@ -89,6 +89,14 @@ fun WorkoutListScreen(
                 TextButton(onClick = onLogout) { Text("Log out") }
             }
 
+            if (!state.isLoading && state.error == null && state.workouts.isNotEmpty()) {
+                Text(
+                    state.summary.headline(),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
             OutlinedTextField(
                 value = state.query,
                 onValueChange = viewModel::onQueryChange,

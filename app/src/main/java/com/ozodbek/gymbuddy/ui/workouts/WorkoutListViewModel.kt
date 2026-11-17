@@ -6,6 +6,8 @@ import com.ozodbek.gymbuddy.data.AppException
 import com.ozodbek.gymbuddy.data.WorkoutRepository
 import com.ozodbek.gymbuddy.data.model.Workout
 import com.ozodbek.gymbuddy.domain.WorkoutFilters
+import com.ozodbek.gymbuddy.domain.WorkoutStats
+import com.ozodbek.gymbuddy.domain.WorkoutSummary
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +26,9 @@ data class WorkoutListUiState(
 ) {
     /** The workouts that match the search text (all of them when the search is empty). */
     val visible: List<Workout> get() = WorkoutFilters.search(workouts, query)
+
+    /** E7: numbers for the header, computed from all of the user's workouts. */
+    val summary: WorkoutSummary get() = WorkoutStats.summarize(workouts)
 }
 
 class WorkoutListViewModel(private val repository: WorkoutRepository) : ViewModel() {
