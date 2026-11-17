@@ -7,19 +7,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ozodbek.gymbuddy.AppContainer
 import com.ozodbek.gymbuddy.ui.auth.AuthViewModel
 import com.ozodbek.gymbuddy.ui.auth.LoginScreen
 import com.ozodbek.gymbuddy.ui.auth.RegisterScreen
-import com.ozodbek.gymbuddy.ui.home.HomeScreen
+import com.ozodbek.gymbuddy.ui.workouts.WorkoutEditScreen
+import com.ozodbek.gymbuddy.ui.workouts.WorkoutEditViewModel
+import com.ozodbek.gymbuddy.ui.workouts.WorkoutListScreen
+import com.ozodbek.gymbuddy.ui.workouts.WorkoutListViewModel
 
 object Routes {
     const val LOGIN = "login"
     const val REGISTER = "register"
-    const val HOME = "home"
+    const val WORKOUTS = "workouts"
+    const val EDIT = "edit?id={id}" // no id = create, with id = edit
+
+    fun edit(id: String? = null) = if (id == null) "edit" else "edit?id=$id"
 }
 
 @Composable
@@ -28,17 +36,16 @@ fun AppNavHost(container: AppContainer) {
     val navController = rememberNavController()
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     // Auto-login: decided once, from the state at app start.
-    val startDestination = remember { if (isLoggedIn) Routes.HOME else Routes.LOGIN }
+    val startDestination = remember { if (isLoggedIn) Routes.WORKOUTS else Routes.LOGIN }
 
     // Navigation reacts to auth state, and clears the back stack on every switch.
     LaunchedEffect(isLoggedIn) {
-        val target = if (isLoggedIn) Routes.HOME else Routes.LOGIN
-        val current = navController.currentDestination?.route
-        val onAuthFlow = current == Routes.LOGIN || current == Routes.REGISTER
-        val alreadyThere = if (isLoggedIn) current == Routes.HOME else onAuthFlow
-        if (!alreadyThere) {
+        val current = navController.currentDestination?.route ?: return@LaunchedEffect
+        val onAuthScreen = current == Routes.LOGIN || current == Routes.REGISTER
+        // Logged in while on an auth screen, or logged out while inside the app.
+        if (isLoggedIn == onAuthScreen) {
             authViewModel.resetForm()
-            navController.clearAndGo(target)
+            navController.clearAndGo(if (isLoggedIn) Routes.WORKOUTS else Routes.LOGIN)
         }
     }
 
@@ -55,8 +62,29 @@ fun AppNavHost(container: AppContainer) {
                 navController.popBackStack()
             })
         }
-        composable(Routes.HOME) {
-            HomeScreen(email = authViewModel.currentEmail, onLogout = authViewModel::logout)
+        composable(Routes.WORKOUTS) {
+            val viewModel: WorkoutListViewModel = viewModel { WorkoutListViewModel(container.workoutRepository) }
+            WorkoutListScreen(
+                viewModel = viewModel,
+                userEmail = authViewModel.currentEmail,
+                onAdd = { navController.navigate(Routes.edit()) },
+                onOpen = { id -> navController.navigate(Routes.edit(id)) },
+                onLogout = authViewModel::logout
+            )
+        }
+        composable(
+            route = Routes.EDIT,
+            arguments = listOf(navArgument("id") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { entry ->
+            val id = entry.arguments?.getString("id") // null = create
+            val viewModel: WorkoutEditViewModel = viewModel {
+                WorkoutEditViewModel(container.workoutRepository, id)
+            }
+            WorkoutEditScreen(viewModel, onDone = { navController.popBackStack() })
         }
     }
 }
