@@ -115,9 +115,19 @@ fun WorkoutListScreen(
                         Button(onClick = viewModel::retry) { Text("Try again") }
                     }
 
-                    state.workouts.isEmpty() -> Text("No workouts yet", modifier = Modifier.align(Alignment.Center))
+                    // E3: an empty list invites the user to add the first workout ...
+                    state.workouts.isEmpty() -> EmptyMessage(
+                        title = "No workouts yet",
+                        hint = "Tap + to add your first workout.",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
 
-                    state.visible.isEmpty() -> Text("No results", modifier = Modifier.align(Alignment.Center))
+                    // ... while a search without hits says something different.
+                    state.visible.isEmpty() -> EmptyMessage(
+                        title = "No workouts match “${state.query.trim()}”",
+                        hint = "Try another word or tap Clear.",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
 
                     else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(state.visible, key = { it.id }) { workout ->
@@ -154,5 +164,13 @@ private fun WorkoutRow(workout: Workout, onOpen: () -> Unit, onDelete: () -> Uni
             }
             TextButton(onClick = onDelete) { Text("Delete") }
         }
+    }
+}
+
+@Composable
+private fun EmptyMessage(title: String, hint: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(title, style = MaterialTheme.typography.titleMedium)
+        Text(hint, style = MaterialTheme.typography.bodyMedium)
     }
 }
