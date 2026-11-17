@@ -1,0 +1,57 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(data) {
+      return signedIn() && data.ownerId == request.auth.uid;
+    }
+
+    // Server-side validation. The app validator (WorkoutValidator.kt) enforces the same
+    // title, notes and end-after-start rules before anything is sent.
+    function validWorkout(d) {
+      return d.keys().hasAll(['ownerId', 'title', 'typeId', 'typeName', 'startAt', 'endAt', 'notes', 'createdAt', 'updatedAt'])
+        && d.keys().hasOnly(['ownerId', 'title', 'typeId', 'typeName', 'startAt', 'endAt', 'notes', 'createdAt', 'updatedAt'])
+        && d.ownerId is string
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 60
+        && d.typeId is string && d.typeId.size() > 0
+        && d.typeName is string
+        && d.startAt is timestamp
+        && d.endAt is timestamp && d.endAt > d.startAt
+        && d.notes is string && d.notes.size() <= 200
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    // Main collection: only the owner can read, change or delete a workout.
+    match /workouts/{workoutId} {
+      allow read, delete: if isOwner(resource.data);
+
+      allow create: if isOwner(request.resource.data)
+        && validWorkout(request.resource.data)
+        && request.resource.data.createdAt == request.time   // server time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isOwner(resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId        // owner cannot change
+        && request.resource.data.createdAt == resource.data.createdAt    // created time cannot change
+        && validWorkout(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Reference collection: readable by signed-in users, writable by nobody from the app.
+    match /workoutTypes/{typeId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
