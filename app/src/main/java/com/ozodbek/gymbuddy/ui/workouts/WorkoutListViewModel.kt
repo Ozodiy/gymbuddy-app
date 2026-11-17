@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ozodbek.gymbuddy.data.AppException
 import com.ozodbek.gymbuddy.data.WorkoutRepository
 import com.ozodbek.gymbuddy.data.model.Workout
+import com.ozodbek.gymbuddy.domain.WorkoutFilters
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +17,14 @@ import kotlinx.coroutines.launch
 data class WorkoutListUiState(
     val isLoading: Boolean = true,
     val workouts: List<Workout> = emptyList(),
+    val query: String = "",
     val error: String? = null,
     /** One-time text for the snackbar (for example after a delete). */
     val message: String? = null
-)
+) {
+    /** The workouts that match the search text (all of them when the search is empty). */
+    val visible: List<Workout> get() = WorkoutFilters.search(workouts, query)
+}
 
 class WorkoutListViewModel(private val repository: WorkoutRepository) : ViewModel() {
 
@@ -74,6 +79,8 @@ class WorkoutListViewModel(private val repository: WorkoutRepository) : ViewMode
             )
         }
     }
+
+    fun onQueryChange(value: String) = _uiState.update { it.copy(query = value) }
 
     fun messageShown() = _uiState.update { it.copy(message = null) }
 }
