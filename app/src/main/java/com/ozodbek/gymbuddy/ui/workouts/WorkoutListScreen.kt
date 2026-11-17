@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -88,6 +89,19 @@ fun WorkoutListScreen(
                 TextButton(onClick = onLogout) { Text("Log out") }
             }
 
+            OutlinedTextField(
+                value = state.query,
+                onValueChange = viewModel::onQueryChange,
+                label = { Text("Search workouts") },
+                singleLine = true,
+                trailingIcon = {
+                    if (state.query.isNotEmpty()) {
+                        TextButton(onClick = { viewModel.onQueryChange("") }) { Text("Clear") }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            )
+
             Box(modifier = Modifier.fillMaxSize().padding(top = 8.dp)) {
                 when {
                     state.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -103,8 +117,10 @@ fun WorkoutListScreen(
 
                     state.workouts.isEmpty() -> Text("No workouts yet", modifier = Modifier.align(Alignment.Center))
 
+                    state.visible.isEmpty() -> Text("No results", modifier = Modifier.align(Alignment.Center))
+
                     else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(state.workouts, key = { it.id }) { workout ->
+                        items(state.visible, key = { it.id }) { workout ->
                             WorkoutRow(
                                 workout = workout,
                                 onOpen = { onOpen(workout.id) },
