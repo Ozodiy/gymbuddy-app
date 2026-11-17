@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "6750603197",
+    "project_id": "gymbuddy-ozodiy",
+    "storage_bucket": "gymbuddy-ozodiy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6750603197:android:4586fc0ec7200bd18674d4",
+        "android_client_info": {
+          "package_name": "com.ozodbek.gymbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8cYCWmxum-INAUiGpaDlvD_jEzp1-gXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
