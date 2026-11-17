@@ -22,24 +22,59 @@ Everyone writes code; roles say who is accountable for a decision.
 | # | Feature | Sprint |
 |---|---|---|
 | 1 | Register, log in, log out, auto-login (Firebase Auth) | 1 |
-| 2 | List my workouts | 1 |
-| 3 | Add / edit / delete a workout (detail/edit screen) | 1 |
+| 2 | List my workouts (live, only mine) | 1 (Lab 2) |
+| 3 | Add / edit / delete a workout (one form, delete with confirmation) | 1 (Lab 2) |
 | 4 | Weekly stats (Cloud Function) | later (Lab 3) |
 | 5 | Find a training partner / join a session | later |
 
 ## Screens (5)
 
-Login · Register · Workouts (home list) · Workout detail/edit · Partners (training sessions). Mockups: [docs/design/mockups](docs/design/mockups/00_overview.png).
+Login · Register · Workouts (list) · Workout form (create and edit) · Partners (later, not built yet). Mockups: [docs/design/mockups](docs/design/mockups/00_overview.png).
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| App framework | Kotlin + Jetpack Compose (Material 3), Navigation Compose |
+| Backend | Firebase (free Spark plan) |
+| Database | Cloud Firestore, with live snapshot listeners |
+| Auth | Firebase Authentication (email and password) |
+| Server-side access control | Firestore Security Rules (`firestore.rules`) |
+| Test tools | JUnit (unit tests), Firebase Emulator Suite + `@firebase/rules-unit-testing` (rules tests) |
+| Build | Gradle (version catalog), Android Studio |
 
 ## Data model (Cloud Firestore)
 
-| Collection | Fields (type) |
-|---|---|
-| `users` | uid (doc id) · email (string) · displayName (string) · createdAt (timestamp) |
-| `workouts` | ownerId (string) · title (string) · type (string) · durationMin (number) · notes (string) · date (timestamp) · createdAt (timestamp) |
-| `sessions` | ownerId (string) · title (string) · gym (string) · startsAt (timestamp) · maxPeople (number) · participantIds (array of string) |
+Two collections: the main `workouts` collection that users create, edit and delete, and the read-only reference collection `workoutTypes`. The "Set by" column says who writes each field: **user** (typed or picked in the form), **app** (code, from the session) or **server** (Firestore server clock).
 
-`ownerId` links a document to its owner; Security Rules (Lab 2) enforce that users only edit their own data.
+**`workouts`**
+
+| Field | Type | Set by |
+|---|---|---|
+| id | string (document id) | server |
+| ownerId | string | app (uid of the signed-in user, never typed) |
+| typeId | string (id in `workoutTypes`) | user (picks from the list) |
+| typeName | string (copied for the list) | app |
+| title | string, 1-60 characters | user |
+| startAt | timestamp | user |
+| endAt | timestamp, after `startAt` | user |
+| notes | string, up to 200 characters | user |
+| createdAt | timestamp | server (`serverTimestamp()`) |
+| updatedAt | timestamp | server (`serverTimestamp()`) |
+
+**`workoutTypes`** (reference data, read-only for users, at least 3 records)
+
+| Field | Type | Set by |
+|---|---|---|
+| id | string (document id, for example `strength`) | team, in the console |
+| name | string | team, in the console |
+| sortOrder | number | team, in the console |
+
+`ownerId` links a workout to its owner; the rules in `firestore.rules` make sure only the owner can read, change or delete it. The `users` and `sessions` collections from Lab 1 are not used yet (the partner finder comes later).
+
+## Definition of Done
+
+A story is done when it is merged to `main` through a reviewed PR, works on the device of a second team member, does not crash on invalid input and its issue is closed.
 
 ## Architecture
 
@@ -50,7 +85,11 @@ flowchart LR
   D[Cloud Functions<br/>Lab 3] --> C
 ```
 
-Layers in the app: `data` (AuthRepository, the only code that talks to FirebaseAuth) → `domain` + `ui/auth` (AuthValidator, AuthViewModel) → `ui` (screens and navigation).
+Layers in the app:
+
+- `data`: `AuthRepository` / `WorkoutRepository` (interfaces) and their Firebase implementations. The only code that talks to the backend.
+- `domain`: pure Kotlin with no UI, Android or backend imports: `AuthValidator`, `WorkoutValidator`, `WorkoutFilters`, `WorkoutStats`.
+- `ui`: one state holder (ViewModel) per screen plus the screens and navigation. They get the repository through the constructor, so a fake can be passed in tests (Lab 3). `AppContainer` is the only place that creates the real repositories.
 
 ## Project structure
 
@@ -59,9 +98,9 @@ gymbuddy-app/
 ├── app/                      Android app (Kotlin + Compose)
 │   └── src/
 │       ├── main/java/com/ozodbek/gymbuddy/
-│       │   ├── data/         AuthRepository, FirebaseAuthRepository
-│       │   ├── domain/       AuthValidator
-│       │   └── ui/           auth/, home/, navigation/
+│       │   ├── data/         repositories (+ model/ for Workout, WorkoutType)
+│       │   ├── domain/       validators, filters, statistics (pure)
+│       │   └── ui/           auth/, workouts/, navigation/
 │       └── test/             unit tests (JUnit)
 ├── docs/
 │   ├── planning/             problem statement, MVP, architecture, data model
@@ -69,6 +108,8 @@ gymbuddy-app/
 │   ├── sprint/               Sprint 1 user stories / issues
 │   ├── presentation/         Lab 1 slides
 │   └── TOOLS.md              tools used
+├── firestore.rules           server-side access rules
+├── rules-tests/              Security Rules tests (Firebase emulator)
 ├── gradle/                   version catalog (libs.versions.toml)
 └── .github/                  pull request template
 ```
@@ -81,13 +122,23 @@ gymbuddy-app/
 | Design | Python + Pillow mockups |
 | Development | Android Studio, Kotlin, Jetpack Compose, Navigation Compose, ViewModel and StateFlow, Coroutines, Gradle |
 | Cloud backend | Firebase Authentication, Cloud Firestore, Security Rules, Cloud Functions (Lab 3) |
-| Testing | JUnit, Android emulator |
+| Testing | JUnit, Android emulator, Firebase Emulator Suite (rules tests) |
 
 Details: [docs/TOOLS.md](docs/TOOLS.md). Planning documents: [docs/planning](docs/planning).
 
 ## How to run
 
 1. Open the project in Android Studio (latest stable) and let Gradle sync.
-2. In the Firebase console, create a project, register an Android app with package `com.ozodbek.gymbuddy`, and put `google-services.json` into `app/`.
+2. In the [Firebase console](https://console.firebase.google.com) create a project (free Spark plan), register an Android app with package `com.ozodbek.gymbuddy`, and put `google-services.json` into `app/`.
 3. Enable Authentication → Sign-in method → Email/Password.
-4. Run on an emulator with Google Play services.
+4. Create the database: Firestore Database → Create database → an **EU** region (for example `eur3`) → production mode.
+5. Deploy the rules: `firebase deploy --only firestore:rules` (or paste `firestore.rules` into the console Rules tab).
+6. Add the reference data: in the console create the collection `workoutTypes` with at least 3 documents, for example ids `strength`, `cardio`, `mobility`, each with `name` (string, for example `Strength`) and `sortOrder` (**number**: 1, 2, 3).
+7. Run on an emulator with Google Play services, register two accounts and check that each sees only its own workouts.
+
+### Run the rules tests
+
+```
+cd rules-tests && npm install
+cd .. && firebase emulators:exec --only firestore --project gymbuddy-rules-test "npm --prefix rules-tests test"
+```
