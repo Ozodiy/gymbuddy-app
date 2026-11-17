@@ -2,13 +2,8 @@ package com.ozodbek.gymbuddy.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.ozodbek.gymbuddy.data.AppException
 import com.ozodbek.gymbuddy.data.AuthRepository
-import com.ozodbek.gymbuddy.data.FirebaseAuthRepository
 import com.ozodbek.gymbuddy.domain.AuthValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +25,7 @@ data class AuthUiState(
 )
 
 class AuthViewModel(
-    private val repository: AuthRepository = FirebaseAuthRepository()
+    private val repository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -83,12 +78,7 @@ class AuthViewModel(
         }
     }
 
-    private fun friendlyMessage(e: Throwable): String = when (e) {
-        is FirebaseAuthUserCollisionException -> "An account with this email already exists"
-        is FirebaseAuthWeakPasswordException -> "Password is too weak"
-        is FirebaseAuthInvalidUserException,
-        is FirebaseAuthInvalidCredentialsException -> "Incorrect email or password"
-        is FirebaseNetworkException -> "No internet connection"
-        else -> "Something went wrong. Please try again"
-    }
+    /** The data layer already turned backend errors into messages that are safe to show. */
+    private fun friendlyMessage(e: Throwable): String =
+        (e as? AppException)?.message ?: "Something went wrong. Please try again"
 }

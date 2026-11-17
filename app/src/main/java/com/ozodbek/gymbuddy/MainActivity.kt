@@ -10,9 +10,10 @@ import com.ozodbek.gymbuddy.ui.navigation.AppNavHost
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val container = (application as GymBuddyApp).container
         setContent {
             MaterialTheme {
-                Surface { AppNavHost() }
+                Surface { AppNavHost(container) }
             }
         }
     }

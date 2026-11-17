@@ -1,7 +1,12 @@
 package com.ozodbek.gymbuddy.data
 
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -23,9 +28,24 @@ class FirebaseAuthRepository(
 
     override suspend fun register(email: String, password: String): Result<Unit> =
         runCatching { auth.createUserWithEmailAndPassword(email, password).await(); Unit }
+            .fold(onSuccess = { Result.success(Unit) }, onFailure = { Result.failure(friendlyError(it)) })
 
     override suspend fun login(email: String, password: String): Result<Unit> =
         runCatching { auth.signInWithEmailAndPassword(email, password).await(); Unit }
+            .fold(onSuccess = { Result.success(Unit) }, onFailure = { Result.failure(friendlyError(it)) })
 
     override fun logout() = auth.signOut()
+
+    /** Maps Firebase exceptions to messages that are safe to show; no raw exception text reaches the UI. */
+    private fun friendlyError(e: Throwable): AppException = AppException(
+        when (e) {
+            is FirebaseAuthUserCollisionException -> "An account with this email already exists"
+            is FirebaseAuthWeakPasswordException -> "Password is too weak"
+            is FirebaseAuthInvalidUserException,
+            is FirebaseAuthInvalidCredentialsException -> "Incorrect email or password"
+            is FirebaseNetworkException -> "No internet connection"
+            else -> "Something went wrong. Please try again"
+        },
+        e
+    )
 }

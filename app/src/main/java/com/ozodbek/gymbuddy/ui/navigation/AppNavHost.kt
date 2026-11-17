@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ozodbek.gymbuddy.AppContainer
 import com.ozodbek.gymbuddy.ui.auth.AuthViewModel
 import com.ozodbek.gymbuddy.ui.auth.LoginScreen
 import com.ozodbek.gymbuddy.ui.auth.RegisterScreen
@@ -22,7 +23,8 @@ object Routes {
 }
 
 @Composable
-fun AppNavHost(authViewModel: AuthViewModel = viewModel()) {
+fun AppNavHost(container: AppContainer) {
+    val authViewModel: AuthViewModel = viewModel { AuthViewModel(container.authRepository) }
     val navController = rememberNavController()
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     // Auto-login: decided once, from the state at app start.
