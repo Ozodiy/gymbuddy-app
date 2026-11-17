@@ -113,46 +113,23 @@ for t, sub, date in items:
     y += 195
 d.ellipse((W - 170, H - 330, W - 60, H - 220), fill=ACCENT)
 text(d, (W - 115, H - 277), "+", 70, True, "white", "mm")
-bottom_nav(d, "w")
 save(img, "03_workouts.png")
 
 # 4 Workout detail / edit ----------------------------------------------
 img, d = new_screen()
 top_bar(d, "Edit workout", back=True, action="Save")
-y = field(d, 230, "Title", "Push day")
-y = field(d, y, "Type", "Strength")
-y = field(d, y, "Duration (min)", "60")
-y = field(d, y, "Date", "20 Oct 2025")
+y = field(d, 230, "Type", "Strength")
+y = field(d, y, "Title", "Push day")
+y = field(d, y, "Start (yyyy-MM-dd HH:mm)", "2025-10-20 18:00")
+y = field(d, y, "End (yyyy-MM-dd HH:mm)", "2025-10-20 19:00")
 text(d, (60, y), "Notes", 24, fill=MUTED)
 d.rounded_rectangle((60, y + 36, W - 60, y + 246), 16, fill=CARD, outline=LINE, width=3)
 text(d, (84, y + 62), "Bench 4x8 @ 70 kg, felt strong.", 28)
 button(d, y + 300, "Delete workout", "#FEE2E2", ERR)
 save(img, "04_workout_edit.png")
 
-# 5 Partners: training sessions ----------------------------------------
-img, d = new_screen()
-top_bar(d, "Find a partner")
-text(d, (60, 220), "Open sessions near you", 28, True, ACCENT_DK)
-sessions = [("Chest & triceps", "FitZone Gym \u00b7 Sat 10:00", "2/4 joined", "Join"),
-            ("Morning run", "City Park \u00b7 Sun 08:00", "3/6 joined", "Joined"),
-            ("Leg day", "PowerHouse \u00b7 Mon 18:30", "1/3 joined", "Join")]
-y = 290
-for t, sub, cnt, btn in sessions:
-    d.rounded_rectangle((50, y, W - 50, y + 230), 24, fill=CARD, outline=LINE, width=2)
-    text(d, (84, y + 28), t, 34, True)
-    text(d, (84, y + 84), sub, 26, fill=MUTED)
-    text(d, (84, y + 130), cnt, 26, True, ACCENT_DK)
-    joined = btn == "Joined"
-    d.rounded_rectangle((W - 260, y + 140, W - 84, y + 204), 32, fill="#E2E8F0" if joined else ACCENT)
-    text(d, (W - 172, y + 172), btn, 26, True, MUTED if joined else "white", "mm")
-    y += 255
-d.ellipse((W - 170, H - 330, W - 60, H - 220), fill=ACCENT)
-text(d, (W - 115, H - 277), "+", 70, True, "white", "mm")
-bottom_nav(d, "p")
-save(img, "05_partners.png")
-
 # Overview strip --------------------------------------------------------
-names = ["01_login", "02_register", "03_workouts", "04_workout_edit", "05_partners"]
+names = ["01_login", "02_register", "03_workouts", "04_workout_edit"]
 thumbs = [Image.open(os.path.join(OUT, n + ".png")).resize((W // 2, H // 2)) for n in names]
 strip = Image.new("RGB", (len(thumbs) * (W // 2 + 30) + 30, H // 2 + 60), "#E2E8F0")
 for i, t in enumerate(thumbs):

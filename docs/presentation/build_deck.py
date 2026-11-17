@@ -159,24 +159,22 @@ table(s, [
 ], Inches(0.7), Inches(1.8), Inches(11.9), [0.7, 8.2, 3.0], 18, 0.62)
 tb = s.shapes.add_textbox(Inches(0.7), Inches(6.0), Inches(11.9), Inches(1))
 tb.text_frame.word_wrap = True
-run(tb.text_frame.paragraphs[0], "Limits we respect: 5 screens (incl. login and register) and max. 3 Firestore collections.", 16, MUTED)
+run(tb.text_frame.paragraphs[0], "Limits we respect: max. 5 screens (we build 4: login, register, workouts, workout form) and max. 3 Firestore collections (we use 2).", 16, MUTED)
 
 # 5 Screens ---------------------------------------------------------------
-s = slide("How the app will look", "5 screens: Login · Register · Workouts · Workout detail/edit · Partners")
+s = slide("How the app will look", "4 screens: Login · Register · Workouts · Workout form (Partners is not part of this version)")
 s.shapes.add_picture(os.path.join(MOCK, "00_overview.png"), Inches(0.5), Inches(1.7), width=Inches(12.3))
 tb = s.shapes.add_textbox(Inches(0.7), Inches(6.55), Inches(11.9), Inches(0.6))
 tb.text_frame.word_wrap = True
-run(tb.text_frame.paragraphs[0], "Concept mockups. Login, Register and a temporary Home are built in Lab 1; the rest follow in Labs 2–3.", 15, MUTED)
+run(tb.text_frame.paragraphs[0], "Concept mockups. Login, Register and a temporary Home are built in Lab 1; the rest follow in Lab 2.", 15, MUTED)
 
 # 6 Data model ------------------------------------------------------------
-s = slide("Data model", "Cloud Firestore · 3 collections · ownerId links every document to its owner")
+s = slide("Data model", "Cloud Firestore · 2 collections (workouts, workoutTypes) · ownerId links every document to its owner")
 table(s, [
     ["Collection", "Fields (type)"],
-    ["users", "uid (doc id) · email (string) · displayName (string) · createdAt (timestamp)"],
-    ["workouts", "ownerId (string) · title (string) · type (string) · durationMin (number) · "
-                 "notes (string) · date (timestamp) · createdAt (timestamp)"],
-    ["sessions", "ownerId (string) · title (string) · gym (string) · startsAt (timestamp) · "
-                 "maxPeople (number) · participantIds (array of string)"],
+    ["workouts", "ownerId (string) · typeId (string) · typeName (string) · title (string) · startAt (timestamp) · "
+                 "endAt (timestamp) · notes (string) · createdAt (timestamp) · updatedAt (timestamp)"],
+    ["workoutTypes", "name (string) · sortOrder (number) – read-only reference data (Strength, Cardio, ...)"],
 ], Inches(0.7), Inches(1.8), Inches(11.9), [2.2, 9.7], 17, 0.95)
 tb = s.shapes.add_textbox(Inches(0.7), Inches(5.9), Inches(11.9), Inches(1))
 tb.text_frame.word_wrap = True
@@ -198,7 +196,7 @@ for i in range(2):
     a = box(s, Inches(3.75), Inches(2.85 + i * 1.45), Inches(0.5), Inches(0.3), ORANGE, shape=MSO_SHAPE.DOWN_ARROW)
 cloud = [("Android app", "Kotlin + Jetpack Compose", NAVY),
          ("Firebase Authentication", "email + password", ORANGE),
-         ("Cloud Firestore", "workouts, sessions, users", ORANGE),
+         ("Cloud Firestore", "workouts, workoutTypes", ORANGE),
          ("Cloud Functions", "Lab 3 – weekly stats", MUTED)]
 y = 1.7
 for name, sub, col in cloud:

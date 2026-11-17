@@ -29,7 +29,7 @@ Everyone writes code; roles say who is accountable for a decision.
 
 ## Screens (5)
 
-Login · Register · Workouts (list) · Workout form (create and edit) · Partners (later, not built yet). Mockups: [docs/design/mockups](docs/design/mockups/00_overview.png).
+Login · Register · Workouts (list) · Workout form (create and edit, fields in the order Type, Title, Start, End, Notes). Partners is not part of this version. Mockups: [docs/design/mockups](docs/design/mockups/00_overview.png).
 
 ## Tech stack
 

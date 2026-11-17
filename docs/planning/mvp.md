@@ -14,5 +14,5 @@
 - At least one feature that needs server-side logic or file storage (Lab 3): weekly stats Cloud Function.
 
 ## Screens (5)
-Login · Register · Workouts (home list) · Workout detail/edit · Partners (training sessions).
+Login · Register · Workouts (home list) · Workout form (create/edit). Partners (training sessions) is not built in this version.
 Mockups: [../design/mockups/00_overview.png](../design/mockups/00_overview.png)
