@@ -60,6 +60,13 @@ fun WorkoutEditScreen(viewModel: WorkoutEditViewModel, onDone: () -> Unit) {
             return@Column
         }
 
+        TypePicker(
+            types = state.types,
+            selectedId = state.form.typeId,
+            error = state.errors.type,
+            onSelect = viewModel::onTypeChange
+        )
+
         OutlinedTextField(
             value = state.form.title,
             onValueChange = viewModel::onTitleChange,
@@ -68,13 +75,6 @@ fun WorkoutEditScreen(viewModel: WorkoutEditViewModel, onDone: () -> Unit) {
             isError = state.errors.title != null,
             supportingText = { state.errors.title?.let { Text(it) } },
             modifier = Modifier.fillMaxWidth()
-        )
-
-        TypePicker(
-            types = state.types,
-            selectedId = state.form.typeId,
-            error = state.errors.type,
-            onSelect = viewModel::onTypeChange
         )
 
         OutlinedTextField(

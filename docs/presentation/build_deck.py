@@ -123,9 +123,9 @@ run(p, "Aida Ismayilova (57689)  ·  Ozodbek Tursunaliyev (57264)  ·  Elturan V
 # 2 What is GymBuddy ------------------------------------------------------
 s = slide("What is GymBuddy?", "An Android app backed by the cloud")
 bullets(s, [
-    ("Gym + Buddy:", "your workout log and your training partner finder in one app."),
+    ("Gym + Buddy:", "your workout log today, and a training partner finder as a future plan."),
     ("Log:", "record each workout (type, duration, notes) and see your history and weekly progress."),
-    ("Find:", "post or join open training sessions, so you never have to train alone."),
+    ("Future plan:", "post or join open training sessions, so you never have to train alone."),
     ("Cloud:", "everything is stored in Firebase, so your data follows you to any phone."),
 ], Inches(0.7), Inches(1.7), Inches(7.2), Inches(5), 22)
 b = box(s, Inches(8.3), Inches(1.9), Inches(4.4), Inches(4.6), LIGHT)
@@ -144,7 +144,7 @@ run(tf.paragraphs[0], "“Gym-goers forget what they trained and struggle to fin
 bullets(s, [
     ("Today:", "workouts live in notes apps, memory or nowhere; partners are found by chance."),
     ("Impact:", "no visible progress and no accountability lead to people quitting."),
-    ("Our answer:", "a simple cloud log plus a place to arrange sessions with others."),
+    ("Our answer:", "a simple cloud log now, and a place to arrange sessions with others as a future plan."),
 ], Inches(0.7), Inches(3.7), Inches(11.9), Inches(3), 22)
 
 # 4 MVP -------------------------------------------------------------------
@@ -155,28 +155,26 @@ table(s, [
     ["2", "List my workouts", "Sprint 1 (Lab 2)"],
     ["3", "Add, edit and delete a workout (detail/edit screen)", "Sprint 1 (Lab 2)"],
     ["4", "Weekly stats calculated by a Cloud Function", "Later (Lab 3)"],
-    ["5", "Find a partner: create and join training sessions", "Later"],
+    ["5", "Find a partner: create and join training sessions", "Future plan"],
 ], Inches(0.7), Inches(1.8), Inches(11.9), [0.7, 8.2, 3.0], 18, 0.62)
 tb = s.shapes.add_textbox(Inches(0.7), Inches(6.0), Inches(11.9), Inches(1))
 tb.text_frame.word_wrap = True
-run(tb.text_frame.paragraphs[0], "Limits we respect: 5 screens (incl. login and register) and max. 3 Firestore collections.", 16, MUTED)
+run(tb.text_frame.paragraphs[0], "Limits we respect: max. 5 screens (we build 4: login, register, workouts, workout form) and max. 3 Firestore collections (we use 2).", 16, MUTED)
 
 # 5 Screens ---------------------------------------------------------------
-s = slide("How the app will look", "5 screens: Login · Register · Workouts · Workout detail/edit · Partners")
+s = slide("How the app will look", "4 screens: Login · Register · Workouts · Workout form (Partners is not part of this version)")
 s.shapes.add_picture(os.path.join(MOCK, "00_overview.png"), Inches(0.5), Inches(1.7), width=Inches(12.3))
 tb = s.shapes.add_textbox(Inches(0.7), Inches(6.55), Inches(11.9), Inches(0.6))
 tb.text_frame.word_wrap = True
-run(tb.text_frame.paragraphs[0], "Concept mockups. Login, Register and a temporary Home are built in Lab 1; the rest follow in Labs 2–3.", 15, MUTED)
+run(tb.text_frame.paragraphs[0], "Concept mockups. Login, Register and a temporary Home are built in Lab 1; the rest follow in Lab 2.", 15, MUTED)
 
 # 6 Data model ------------------------------------------------------------
-s = slide("Data model", "Cloud Firestore · 3 collections · ownerId links every document to its owner")
+s = slide("Data model", "Cloud Firestore · 2 collections (workouts, workoutTypes) · ownerId links every document to its owner")
 table(s, [
     ["Collection", "Fields (type)"],
-    ["users", "uid (doc id) · email (string) · displayName (string) · createdAt (timestamp)"],
-    ["workouts", "ownerId (string) · title (string) · type (string) · durationMin (number) · "
-                 "notes (string) · date (timestamp) · createdAt (timestamp)"],
-    ["sessions", "ownerId (string) · title (string) · gym (string) · startsAt (timestamp) · "
-                 "maxPeople (number) · participantIds (array of string)"],
+    ["workouts", "ownerId (string) · typeId (string) · typeName (string) · title (string) · startAt (timestamp) · "
+                 "endAt (timestamp) · notes (string) · createdAt (timestamp) · updatedAt (timestamp)"],
+    ["workoutTypes", "name (string) · sortOrder (number) – read-only reference data (Strength, Cardio, ...)"],
 ], Inches(0.7), Inches(1.8), Inches(11.9), [2.2, 9.7], 17, 0.95)
 tb = s.shapes.add_textbox(Inches(0.7), Inches(5.9), Inches(11.9), Inches(1))
 tb.text_frame.word_wrap = True
@@ -198,7 +196,7 @@ for i in range(2):
     a = box(s, Inches(3.75), Inches(2.85 + i * 1.45), Inches(0.5), Inches(0.3), ORANGE, shape=MSO_SHAPE.DOWN_ARROW)
 cloud = [("Android app", "Kotlin + Jetpack Compose", NAVY),
          ("Firebase Authentication", "email + password", ORANGE),
-         ("Cloud Firestore", "workouts, sessions, users", ORANGE),
+         ("Cloud Firestore", "workouts, workoutTypes", ORANGE),
          ("Cloud Functions", "Lab 3 – weekly stats", MUTED)]
 y = 1.7
 for name, sub, col in cloud:
@@ -241,7 +239,7 @@ table(s, [
 ], Inches(0.7), Inches(1.8), Inches(11.9), [6.6, 3.9, 1.4], 16, 0.8)
 tb = s.shapes.add_textbox(Inches(0.7), Inches(6.0), Inches(11.9), Inches(1))
 tb.text_frame.word_wrap = True
-run(tb.text_frame.paragraphs[0], "Backlog: weekly stats Cloud Function, find a partner (sessions).", 17, MUTED)
+run(tb.text_frame.paragraphs[0], "Backlog: weekly stats Cloud Function. Future plan: find a partner (sessions).", 17, MUTED)
 
 # 10 Team ----------------------------------------------------------------
 s = slide("Team and roles", "Everyone writes code – roles say who is accountable for a decision")
