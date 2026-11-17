@@ -128,13 +128,21 @@ Details: [docs/TOOLS.md](docs/TOOLS.md). Planning documents: [docs/planning](doc
 
 ## How to run
 
+The Firebase project **`gymbuddy-ozodiy`** (free Spark plan) is already set up: the Android app is registered, `app/google-services.json` is in the repository, Email/Password sign-in is enabled, Cloud Firestore runs in the EU (`eur3`), the rules from `firestore.rules` are deployed, and the reference collection `workoutTypes` has four records (`strength`, `cardio`, `mobility`, `hiit`, each with `name` as a string and `sortOrder` as a number).
+
 1. Open the project in Android Studio (latest stable) and let Gradle sync.
-2. In the [Firebase console](https://console.firebase.google.com) create a project (free Spark plan), register an Android app with package `com.ozodbek.gymbuddy`, and put `google-services.json` into `app/`.
-3. Enable Authentication → Sign-in method → Email/Password.
-4. Create the database: Firestore Database → Create database → an **EU** region (for example `eur3`) → production mode.
-5. Deploy the rules: `firebase deploy --only firestore:rules` (or paste `firestore.rules` into the console Rules tab).
-6. Add the reference data: in the console create the collection `workoutTypes` with at least 3 documents, for example ids `strength`, `cardio`, `mobility`, each with `name` (string, for example `Strength`) and `sortOrder` (**number**: 1, 2, 3).
-7. Run on an emulator with Google Play services, register two accounts and check that each sees only its own workouts.
+2. Run on an emulator with Google Play services.
+3. Register two accounts and check that each one sees only its own workouts.
+
+Team members need access to the Firebase project to use the console: Project settings → Users and permissions → add them as Editor (Aida, Elturan and the instructor).
+
+### Set up your own Firebase project instead
+
+1. In the [Firebase console](https://console.firebase.google.com) create a project (free Spark plan), register an Android app with package `com.ozodbek.gymbuddy`, and replace `app/google-services.json`.
+2. Authentication → Sign-in method → enable Email/Password (or `firebase deploy --only auth`).
+3. Create the database in an **EU** region (for example `eur3`): `firebase firestore:databases:create "(default)" --location eur3`.
+4. Deploy the rules: `firebase deploy --only firestore`.
+5. Create the collection `workoutTypes` with at least 3 documents, each with `name` (string) and `sortOrder` (**number**).
 
 ### Run the rules tests
 
